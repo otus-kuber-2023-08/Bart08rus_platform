@@ -177,3 +177,42 @@
 
 ## PR checklist:
  - [+] Выставлен label с темой домашнего задания
+
+# Выполнено ДЗ №5
+
+ - [+] Основное ДЗ
+ - [+] Задание со *
+
+## В процессе сделано:
+ - Созданы манифесты для запуска `minio` в конфигурации `StatefulSet` и headless сервиса
+ - Создан манифест для установки `Secret` с переменными для `minio`
+ - Внесены правки в манифест `minio-statefulset.yaml` на использование данных из `secret`'а
+ - Создан манифест для проверки работоспособности и доступности `minio` в пределах кластера
+
+## Как запустить проект:
+ - Переходим в каталог `kubernetes-volumes`
+ - Сперва устанавливаем `Secret`
+   ```
+   kubectl apply -f minio-secret.yaml
+   ```
+ - Запускаем `minio`
+   ```
+   kubectl apply -f minio-statefulset.yaml
+   ```
+ - Создаём `Headless Service`
+   ```
+   kubectl apply -f minio-headless-service.yaml 
+   ```
+
+## Как проверить работоспособность:
+ - Запускаем pod с `minio-client`'ом
+   ```
+   kubectl apply -f minio-client-pod.yaml
+   ```
+ - Смотрим лог
+   ```
+   kubectl logs minio-client
+   ```   
+
+## PR checklist:
+ - [+] Выставлен label с темой домашнего задания
