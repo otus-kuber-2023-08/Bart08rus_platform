@@ -96,3 +96,84 @@
 
 ## PR checklist:
  - [+] Выставлен label с темой домашнего задания
+
+# Выполнено ДЗ №3
+
+ - [+] Основное ДЗ
+ - [+] Задание со *
+
+## В процессе сделано:
+ - Добавлены проверки readinessProbe и livenessProbe в Pod [intro/web-pod.yml](kubernetes-intro/web-pod.yaml)
+ - Создан Deployment [web-deploy.yaml](kubernetes-networks/web-deploy.yaml)
+ - Созданы сервисы типа [ClusterIP](kubernetes-networks/web-svc-cip.yaml), [LoadBalancer](kubernetes-networks/web-svc-lb.yaml) и [Headless](kubernetes-networks/web-svc-headless.yaml)
+ - Включил IPVS
+    ```
+    ...
+    ipvs:
+        strictARP: true
+    ...
+    mode: "ipvs"
+    ...
+    ```
+ - Установил MetalLB
+ - Настроил балансировщик с помощью `ConfigMap`, манифест: [metallb-config.yaml](kubernetes-networks/metallb-config.yaml)
+ - Сделаны манифесты сервисов типа `LoadBalancer`, которые откроют доступ к CoreDNS снаружи кластера (позволит получать записи через внешний IP).
+ - Установлен `Ingress`
+ - Создан файл [nginx-lb.yaml](kubernetes-networks/nginx-lb.yaml) c конфигурацией `LoadBalancer` - сервиса.
+ - Создан Headless-сервис [web-svc-headless.yaml](kubernetes-networks/web-svc-headless.yaml) для нашего веб-приложения.
+ - Настроен наш ingress-прокси, манифест с ресурсом `Ingress` [web-ingress.yaml](kubernetes-networks/web-ingress.yaml)
+ - Установлен `kubernetes-dashboard`. Манифесты в подкаталоге [./dashboard](kubernetes-networks/.dashboard)
+ - Реализовано канареечное развертывание с помощью `ingress-nginx`. Манифесты в подкаталоге [./canary](kubernetes-networks/.canary)
+
+## Как запустить проект:
+ - Установка `MetalLB` и настройка балансировщика с помощью `ConfigMap` из каталога `kubernetes-networks`
+    ```sh
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml
+    kubectl apply -f metallb-config.yaml
+    ```
+ - Установка `Ingress` и настройка ingress-прокси из каталога `kubernetes-networks`
+    ```
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/baremetal/deploy.yaml
+    kubectl apply -f nginx-lb.yaml
+    ```
+ - Запуск веб-приложения из каталога `kubernetes-networks`
+    ```
+    kubectl apply -f web-deploy.yaml -f web-svc-cip.yaml -f web-svc-headless.yaml -f web-svc-lb.yaml
+    ```
+ - Запуск сервиса для открытия доступа к CoreDNS снаружи кластера из каталога `/kubernetes-networks/.coredns`
+    ```
+    kubectl apply -f .
+    ```
+ - Установка `kubernetes-dashboard` и открытие доступа через наш Ingress-прокси производится из каталога `./kubernetes-networks/.dashboard`
+    ```
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+    kubectl apply -f .
+    ```
+ - Запуск веб-приложения реализовного через канареечное развертывание из каталога `/kubernetes-networks/.canary`
+    ```
+    kubectl apply -f .
+    ```
+
+## Как проверить работоспособность:
+ - Проверка работоспособности web-приложения. Перейти по ссылке http://{ingress-nginx-service-lb-ip}/web
+ - Проверка работоспособности kubernetes-dashboard. Перейти по ссылке http://{ingress-nginx-service-lb-ip}/dashboard
+ - Проверка канареечного развертывания
+    Запрос без HTTP-заголовка:
+    ```
+    curl http://{ingress-nginx-service-lb-ip}/web | grep HOSTNAME
+    ```
+    Ответ:
+    ```
+    export HOSTNAME='web-769478cfc8-l6p7g'
+    ```
+    Запрос с HTTP-заголовком "canary: true":
+    ```
+    curl -H "canary: true" http://{ingress-nginx-service-lb-ip}/web | grep HOSTNAME
+    ```
+    Ответ:
+    ```
+    export HOSTNAME='canary-b6f6ccd4d-xzxp4'
+    ```
+
+## PR checklist:
+ - [+] Выставлен label с темой домашнего задания
