@@ -1,0 +1,50 @@
+repositories:
+  - name: ingress-nginx
+    url: https://kubernetes.github.io/ingress-nginx
+  - name: jetstack
+    url: https://charts.jetstack.io
+
+helmDefaults:
+  wait: true
+  atomic: true
+  createNamespace: true
+  
+releases:
+  - name: ingress-nginx
+    namespace: ingress-nginx
+    chart: ingress-nginx/ingress-nginx
+    version: 4.9.1
+  - name: cert-manager
+    namespace: cert-manager
+    chart: jetstack/cert-manager
+    version: v1.13.3
+    needs:
+      - ingress-nginx/ingress-nginx
+    hooks:
+      - events: ["prepare"]
+        showlogs: true
+        command: "kubectl"
+        args:
+          - "apply"
+          - "-f"
+          - "https://github.com/cert-manager/cert-manager/releases/download/v1.13.3/cert-manager.crds.yaml"
+          - "--namespace"
+          - "cert-manager"
+      - events: ["cleanup"]
+        showlogs: true
+        command: "kubectl"
+        args:
+          - "apply"
+          - "-f"
+          - "../cert-manager/prod_issuer.yaml"
+          - "--namespace"
+          - "cert-manager"
+  - name: harbor
+    namespace: harbor
+    chart: oci://registry-1.docker.io/bitnamicharts/harbor
+    version: 19.5.0
+    needs:
+      - ingress-nginx/ingress-nginx
+      - cert-manager/cert-manager
+    values:
+      - ../harbor/values-harbor.yaml

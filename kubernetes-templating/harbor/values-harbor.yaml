@@ -1,0 +1,12 @@
+adminPassword: "Harbor12345"
+
+externalURL: harbor.158.160.128.224.nip.io
+
+exposureType: ingress
+ingress:
+  core:
+    ingressClassName: "nginx"
+    hostname: harbor.158.160.128.224.nip.io
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    tls: true

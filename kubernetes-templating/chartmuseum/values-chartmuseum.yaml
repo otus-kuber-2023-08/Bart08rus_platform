@@ -1,0 +1,16 @@
+## Ingress for load balancer
+ingress:
+  enabled: true
+  pathType: "ImplementationSpecific"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - name: chartmuseum.158.160.128.224.nip.io
+      path: /
+      tls: true
+      tlsSecret: chartmuseum.158.160.128.224.nip.io
+  ingressClassName: "nginx" 
+env:
+  open:
+    # disable all routes prefixed with /api
+    DISABLE_API: false

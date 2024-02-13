@@ -1,0 +1,8 @@
+resources:
+  - ../../base
+namespace: hipster-shop
+nameSuffix: -dev
+commonLabels:
+  environment: development
+commonAnnotations:
+  owner: developer
