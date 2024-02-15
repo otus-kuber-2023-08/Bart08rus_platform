@@ -1,0 +1,11 @@
+resources:
+  - ../../base
+namespace: hipster-shop-prod
+nameSuffix: -prod
+commonLabels:
+  environment: production
+commonAnnotations:
+  owner: production
+replicas:
+  - name: emailservice-prod
+    count: 2

@@ -1,0 +1,9 @@
+dependencies:
+- name: frontend
+  repository: file://../frontend
+  version: 0.1.0
+- name: redis
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 18.12.0
+digest: sha256:ba5871037357e186d74f8ec3577cb2a4a026e5a2501fccb4c49db862987c6134
+generated: "2024-02-05T16:04:57.879727+03:00"

@@ -1,0 +1,10 @@
+replicas: 1
+
+image:
+  tag: v0.8.0
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: http
+  nodePort: 30001

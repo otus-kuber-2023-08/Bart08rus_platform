@@ -216,3 +216,63 @@
 
 ## PR checklist:
  - [+] Выставлен label с темой домашнего задания
+
+# Выполнено ДЗ №6
+- [+] Основное ДЗ
+- [+] Задание со *
+
+## В процессе сделано:
+- Настроен кубер кластер в яндекс облаке
+- Установлен **HELM3**
+- Настроен **ingress-nginx**
+- Подготовлены чарты с вэлью для сервисов: **cert-manager**, **chartmuseum**, **harbor**
+- [*] Научился работать с **chartmuseum**
+- [*] Научился работать с **helmfile**
+- [*] Научился создавать свои helm charts и использовать зависимости
+- Научился использовать **helm-secrets**
+- Научился работать с **kubecfg**
+- Научился работать с **Kustomize**
+
+## Как запустить проект:
+- Добавляем репозиторий **ingress-nginx**
+    `helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx`
+- Установка **ingress-nginx**
+    `helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --version 4.9.1 --namespace ingress-nginx`
+- Добавляем репозиторий **jetstack**
+    `helm repo add jetstack https://charts.jetstack.io`
+- Установка **cert-manager**
+    `helm upgrade --install cert-manager jetstack/cert-manager --version v1.13.3 --namespace cert-manager`
+- Автоматическая генерация Let's Encrypt сертификата
+    `kubectl apply -f kubernetes-templating/cert-manager/prod_issuer.yaml`
+- Добавляем репозиторий **chartmuseum**
+    `helm repo add chartmuseum https://chartmuseum.github.io/charts`
+- Установка **chartmuseum**
+    `helm upgrade --install chartmuseum chartmuseum/chartmuseum --version 3.10.2 --values kubernetes-templating/chartmuseum/values-chartmuseum.yaml --namespace chartmuseum`
+- Установка **harbor**
+    `helm upgrade --install harbor oci://registry-1.docker.io/bitnamicharts/harbor --version 19.5.0 --values kubernetes-templating/harbor/values-harbor.yaml --namespace harbor`
+## Как проверить работоспособность:
+- Шифрование с помощью **helm secrets**
+    `helm secrets encrypt kubernetes-templating/frontend/dec-secrets.yaml > kubernetes-templating/frontend/secrets.yaml`
+- Расшифровка с помощью **helm secrets**
+    ```
+    helm secrets decrypt kubernetes-templating/frontend/secrets.yaml
+    visibleKey: hiddenValue%
+    ```
+- Установка манифестов с помощью **kubecfg**
+    `kubecfg update kubernetes-templating/kubecfg/services.jsonnet --namespace hipster-shop`
+- Установка манифестов с помощью **kustomize**
+    `kustomize build kubernetes-templating/kustomize/emailservice/overrides/prod | kubectl apply -f -`
+
+## Задания со *:
+- Последовательность действий необходимых для добавления helm chart's и их установки с использованием chartmuseum как репозитория
+    ```bash
+      helm repo add mychartmuseum https://chartmuseum.158.160.128.224.nip.io
+      helm cm-push kubernetes-templating/hipster-shop/ mychartmuseum
+    ```
+- Используем **helmfile**
+    `helmfile apply kubernetes-templating/helmfile/helmfile.yaml`
+- Добавляем чарты в зависимости
+    `helm dependency update kubernetes-templating/hipster-shop`
+
+## PR checklist:
+- [+] Выставлен label с темой домашнего задания
